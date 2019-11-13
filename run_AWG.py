@@ -1,14 +1,9 @@
 """
 AWG70k Simple Waveform Sender
-Creates a simple sine wave, sends it to the AWG, assigns
+Creates waveform, sends it to the AWG, assigns
 it to Ch1 and plays it out.
 
-Edited: Nov 11, 2019
-Alex Walter
-
 CentOS 7
-Python 3.6.8 64-bit
-NumPy 1.17.3, PyVISA 1.8
 """
 
 import pyvisa as visa
