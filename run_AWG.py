@@ -23,7 +23,7 @@ print('Connected to ', awg.query('*idn?'))
 
 # Create Waveform
 name = 'sam_wfm'
-repRate = 200e6
+repRate = 100e6
 pulseWidth=40e-12
 pulseSep=2e-9
 wfm_arr=AWGFunc.createWaveformTwoPulseArray(repRate, pulseWidth, pulseSep)
@@ -72,9 +72,9 @@ AWGFunc.sendMarkerData(awg, name, numSamples, markerData)
 
 # Load waveform, being playback, and turn on output
 AWGFunc.loadWaveform(awg, name)
-#awg.write('awgcontrol:run:immediate')
+awg.write('awgcontrol:run:immediate')
 #awg.query('*opc')
-#awg.write('output1 on')
+awg.write('output1 on')
 
 # Check for errors
 AWGFunc.checkErrors(awg)
