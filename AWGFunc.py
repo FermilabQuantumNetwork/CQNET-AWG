@@ -27,15 +27,18 @@ def createWaveformTwoPulseArray(repRate,pulseWidth,pulseSep,pulseCenter=midway, 
     VminNorm=Vmin/awg_Vmax
     VmaxNorm=Vmax/awg_Vmax
     wfm_arr = VminNorm*np.ones(numSamples)
+    print(pulseWidth*sampleRate)
     pulseWidthSampleSize = round(pulseWidth*sampleRate)
     pulseSepSampleSize = round(pulseSep*sampleRate)
-    pulse1StartInd = round(numSamples*pulseCenter) - round(pulseWidthSampleSize/2) - round(pulseSepSampleSize/2) - 1
+    pulse1StartInd = round(numSamples*pulseCenter - pulseWidthSampleSize/2 - pulseSepSampleSize/2 - 1)
     pulse1EndInd = pulse1StartInd + pulseWidthSampleSize
-    for i in range(pulse1StartInd,pulse1EndInd+1):
+    print(pulse1StartInd)
+    print(pulse1EndInd)
+    for i in range(pulse1StartInd,pulse1EndInd):
         wfm_arr[i] = VmaxNorm
-    pulse2StartInd = round(numSamples*pulseCenter) - round(pulseWidthSampleSize/2) + round(pulseSepSampleSize/2) - 1
+    pulse2StartInd = round(numSamples*pulseCenter - pulseWidthSampleSize/2 + pulseSepSampleSize/2 - 1)
     pulse2EndInd = pulse2StartInd + pulseWidthSampleSize
-    for i in range(pulse2StartInd,pulse2EndInd+1):
+    for i in range(pulse2StartInd,pulse2EndInd):
         wfm_arr[i] = VmaxNorm
     return wfm_arr
 
@@ -77,8 +80,16 @@ def sendMarkerData(awg, name, recordLength, markerData):
     print('Marker bytes: {}'.format(ret))
     return ret
 
-def loadWaveform(awg, name):
-    return awg.write('source1:waveform "{}"'.format(name))
+def loadWaveform(awg, name, channelNum):
+    #awg.write('source1:waveform "{}"'.format(name))
+    if channelNum ==1:
+        return awg.write('source1:waveform "{}"'.format(name))
+    elif channelNum == 2:
+        return awg.write('source2:waveform "{}"'.format(name))
+    else:
+        print("Enter valid channel number (1 or 2)")
+
+
 
 
 def checkErrors(awg):
