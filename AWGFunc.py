@@ -1,6 +1,9 @@
 """
 Functions for creating, sending, loading, and running waveforms/markers on the AWG.
 This code is for a Tektronix AWG70002A.
+
+Requirements: Python3, packages listed below
+OS: CentOS 7
 """
 import numpy as np
 awg_sampleRate = 25e9 #in Hz
@@ -8,14 +11,15 @@ midway=0.5
 awg_Vmin=-0.250 #in volts
 awg_Vmax=0.250 #in volts
 
-#Variables:
-#repRate = repetition rate (Hz)
-#pulseWidth = pulse width (seconds)
-#pulseCenter = start position of pulse in terms of fraction of clock cycle
-#Vmin = minimum voltage of waveform (volts)
-#Vmax = max voltage of waveforms (volts)
-#sampleRate = sample rate (Hz)
-
+"""
+Variables:
+repRate = repetition rate (Hz)
+pulseWidth = pulse width (seconds)
+pulseCenter = start position of pulse in terms of fraction of clock cycle
+Vmin = minimum voltage of waveform (volts)
+Vmax = max voltage of waveforms (volts)
+sampleRate = sample rate (Hz)
+"""
 
 #Creates an waveform with a single pulse.
 def createWaveformOnePulseArray(repRate, pulseWidth, pulseCenter = midway, Vmin=awg_Vmin, Vmax=awg_Vmax, sampleRate=awg_sampleRate):

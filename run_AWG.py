@@ -4,7 +4,8 @@ AWG70k Simple Waveform Sender
 Creates a two pulse waveform, plots, the waveform,
 sends it to the AWG, assigns it to Ch2 and plays it out.
 
-CentOS 7
+Requirements: Python3, AWGFunc.py (in same directory), packages listed below
+OS: CentOS 7
 """
 
 import pyvisa as visa

@@ -7,7 +7,8 @@ sends them to the AWG, and loads them onto the respective channels.
 Edited: 1/3/20
 Sam Davis
 
-CentOS 7
+Requirements: Python3, AWGFunc.py (in same directory), packages listed below
+OS: CentOS 7
 """
 
 import pyvisa as visa
