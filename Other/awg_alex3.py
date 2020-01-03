@@ -1,8 +1,8 @@
-#!/usr/bin/python
+"""
+https://github.com/tkzilla/visa_control_examples/blob/master/Python/AWG/awg_simple_waveform_sender.py
 
-# https://github.com/tkzilla/visa_control_examples/blob/master/Python/AWG/awg_simple_waveform_sender.py
-
-# This code will open socket port 5025 and send *IDN to instrument.
+This code will open socket port 5025 and send *IDN to instrument.
+"""
 
 import time
 import numpy
@@ -91,4 +91,3 @@ except KeyboardInterrupt:
     print("")
     print("quit")
     awg.close()
-

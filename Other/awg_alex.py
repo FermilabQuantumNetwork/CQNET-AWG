@@ -1,5 +1,6 @@
-# Alex's working code for controlling the AWG
-
+"""
+Alex's working code for controlling the AWG
+"""
 import numpy as np
 from qcodes.instrument_drivers.tektronix.AWG70002A import AWG70002A
 import pyvisa as visa

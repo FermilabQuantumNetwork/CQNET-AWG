@@ -1,7 +1,8 @@
 """
+
 AWG70k Simple Waveform Sender
-Creates waveform, sends it to the AWG, assigns
-it to Ch1 and plays it out.
+Creates a two pulse waveform, plots, the waveform,
+sends it to the AWG, assigns it to Ch2 and plays it out.
 
 CentOS 7
 """
@@ -23,24 +24,24 @@ print('Connected to ', awg.query('*idn?'))
 
 # Create Waveform
 name = 'sam1_wfm'
-repRate = 100e6
-pulseWidth=40e-12
-pulseSep=2e-9
-wfm_arr=AWGFunc.createWaveformTwoPulseArray(repRate, pulseWidth, pulseSep)
+repRate = 100e6 #clock rate (Hz)
+pulseWidth=40e-12 #in seconds
+pulseSep=2e-9 #in seconds
+wfm_arr=AWGFunc.createWaveformTwoPulseArray(repRate, pulseWidth, pulseSep) #Creates normalized voltage array of two pulses
 numSamples = len(wfm_arr)
-sample_arr = range(numSamples)
+sample_arr = range(numSamples) #array of sample indices
 time_arr = []
 for s in sample_arr:
     time_arr.append(s*10**9 / sampleRate)
 time_arr=np.array(time_arr)
 
 # Create Marker Data
-marker1_arr = AWGFunc.createMarker1Array(repRate)
-marker2_arr = AWGFunc.createMarker2Array(repRate)
+marker1_arr = AWGFunc.createMarkerStepArray(repRate)
+marker2_arr = AWGFunc.createMarkerZerosArray(repRate)
 markerData=AWGFunc.createMarkerData(marker1_arr,marker2_arr)
 
 
-#Plot data
+#Plot waveform + markers before sending to AWG
 #Stacked plot of all data
 fig, axs = plt.subplots(3,1, num=1, sharex=True)
 #WaveForm
@@ -63,27 +64,19 @@ plt.xlabel('Time (ns)', fontsize =16)
 plt.show()
 
 
-
-
 # Send Waveform Data
 AWGFunc.sendWaveform(awg, name, numSamples, wfm_arr)
 #Send Marker data
 AWGFunc.sendMarkerData(awg, name, numSamples, markerData)
 
-# Load waveform, being playback, and turn on output
+# Load waveform onto channel 2, turn on output, and begin playback
 channelNum = 2
 AWGFunc.loadWaveform(awg, name, channelNum)
-#AWGFunc.loadWaveform(awg, "alex_wfm", 2)
 
-#awg.query('*opc')
-#if(channelNum ==1):#
-#    awg.write('output1 on')
-#if(channelNum ==2):
-
-#
+#IMPORTANT: If not sending anything to a channel, need to write the corresponding output off.
 awg.write('output1 off')
 awg.write('output2 on')
-#awg.write('awgcontrol:run:immediate')
+awg.write('awgcontrol:run:immediate') #Start run
 
 # Check for errors
 AWGFunc.checkErrors(awg)
