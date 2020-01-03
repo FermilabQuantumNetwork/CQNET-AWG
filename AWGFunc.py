@@ -1,19 +1,28 @@
+#Functions for creating, sending, loading, and running waveforms/markers on the AWG.
+#This code is for a Tektronix AWG70002A.
 import numpy as np
+awg_sampleRate = 25e9 #in Hz
+midway=0.5
+awg_Vmin=-0.250 #in volts
+awg_Vmax=0.250 #in volts
 
-awg_sampleRate = 25e9
-midway=0.5 #fraction of waveform where start
-awg_Vmin=-0.250
-awg_Vmax=0.250
-#awg.write('*rst')
-#awg.write('*cls')
+#Variables:
+#repRate = repetition rate (Hz)
+#pulseWidth = pulse width (seconds)
+#pulseCenter = start position of pulse in terms of fraction of clock cycle
+#Vmin = minimum voltage of waveform (volts)
+#Vmax = max voltage of waveforms (volts)
+#sampleRate = sample rate (Hz)
 
+
+#Creates an waveform with a single pulse.
 def createWaveformOnePulseArray(repRate, pulseWidth, pulseCenter = midway, Vmin=awg_Vmin, Vmax=awg_Vmax, sampleRate=awg_sampleRate):
-    numSamples = round(sampleRate/repRate)
-    VminNorm=Vmin/awg_Vmax
-    VmaxNorm=Vmax/awg_Vmax
-    wfm_arr = VminNorm*np.ones(numSamples)
-    pulseWidthSampleSize = round(pulseWidth*sampleRate)
-    pulseStartInd = round(numSamples*pulseCenter) - round(pulseWidthSampleSize/2) - 1
+    numSamples = round(sampleRate/repRate) #number of samples
+    VminNorm=Vmin/awg_Vmax #normalized by amplitude
+    VmaxNorm=Vmax/awg_Vmax #normalized by amplitude
+    wfm_arr = VminNorm*np.ones(numSamples) #number of samples = length of voltage array
+    pulseWidthSampleSize = round(pulseWidth*sampleRate) #number of samples in pulse
+    pulseStartInd = round(numSamples*pulseCenter) - round(pulseWidthSampleSize/2) - 1 #Make start index so center of pulse is at pulseCenter
     pulseEndInd = pulseStartInd + pulseWidthSampleSize
     for i in range(pulseStartInd,pulseEndInd+1):
         wfm_arr[i] = VmaxNorm
@@ -21,7 +30,7 @@ def createWaveformOnePulseArray(repRate, pulseWidth, pulseCenter = midway, Vmin=
 
 
 
-
+#Creates an waveform with two pulses.
 def createWaveformTwoPulseArray(repRate,pulseWidth,pulseSep,pulseCenter=midway, Vmin=awg_Vmin, Vmax=awg_Vmax, sampleRate=awg_sampleRate):
     numSamples = round(sampleRate/repRate)
     VminNorm=Vmin/awg_Vmax
@@ -88,8 +97,6 @@ def loadWaveform(awg, name, channelNum):
         return awg.write('source2:waveform "{}"'.format(name))
     else:
         print("Enter valid channel number (1 or 2)")
-
-
 
 
 def checkErrors(awg):

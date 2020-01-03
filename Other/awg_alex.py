@@ -1,4 +1,4 @@
-
+# Alex's working code for controlling the AWG
 
 import numpy as np
 from qcodes.instrument_drivers.tektronix.AWG70002A import AWG70002A
@@ -37,7 +37,3 @@ print(awg.waveformList)
 awg.ch1.setWaveform(filename.replace('.wfmx', ''))
 awg.ch1.state(1)
 awg.ch1.state(0)
-
-
-
-

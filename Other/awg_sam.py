@@ -1,3 +1,4 @@
+# Sam's working code for controlling the AWG
 """
 AWG70k Simple Waveform Sender
 Creates a simple sine wave, sends it to the AWG, assigns
