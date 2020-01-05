@@ -32,7 +32,8 @@ print('Connected to ', awg.query('*idn?'))
 # Create Waveform for Channel 1
 pulseSep=2e-9 #in seconds
 name_ch1 = '2pulse_wfm_CH1'
-wfm_arr_ch1=AWGFunc.createWaveformOnePulseArray(repRate, wfmPulseWidth) #Creates single pulse for channel 1
+wfm_arr_ch1=AWGFunc.createWaveformTwoPulseArray(repRate, wfmPulseWidth,pulseSep) #Creates double pulse for channel 1
+#wfm_arr_ch1=AWGFunc.createWaveformOnePulseArray(repRate, wfmPulseWidth) #Creates single pulse for channel 1
 numSamples_ch1 = len(wfm_arr_ch1)
 
 #Create Waveform for Channel 2
