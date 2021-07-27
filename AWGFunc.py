@@ -79,7 +79,7 @@ def createMarkerOnePulseArray(repRate, pulseWidth, pulseCenter = midway, sampleR
     pulseStartInd = round(numSamples*pulseCenter-pulseWidthSampleSize/2 - 1) #Make start index so center of pulse is at pulseCenter
     pulseEndInd = pulseStartInd + pulseWidthSampleSize #End index of pulse
     for i in range(pulseStartInd,pulseEndInd+1): #Make pulse
-        wfm_arr[i] = 1
+        marker_arr[i] = 1
     return marker_arr
 
 
