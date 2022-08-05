@@ -8,7 +8,7 @@ OS: CentOS 7
 import numpy as np
 awg_sampleRate = 25e9 #in Hz
 midway=0.5
-awg_Vmin=0#-0.250 #in volts
+awg_Vmin=-0.250 #in volts
 awg_Vmax=0.250 #in volts
 
 """
@@ -56,26 +56,6 @@ def createWaveformTwoPulseArray(repRate,pulseWidth,pulseSep,pulseCenter=midway, 
         wfm_arr[i] = VmaxNorm
     return wfm_arr
 
-#Creates an waveform with two pulses. #Here, the pulseCenter corresponds to midpoint of separation between pulses
-def createWaveformNPulseArray(repRate,pulseN,pulseWidth,pulseSep,pulseStart=0, Vmin=awg_Vmin, Vmax=awg_Vmax, sampleRate=awg_sampleRate):
-    numSamples = round(sampleRate/repRate) #number of samples
-    VminNorm=Vmin/awg_Vmax #normalized by amplitude
-    VmaxNorm=Vmax/awg_Vmax #normalized by amplitude
-    wfm_arr = VminNorm*np.ones(numSamples) #number of samples = length of normalized voltage array
-    print("pulseWidthSampleSize: ", pulseWidth*sampleRate)
-    pulseWidthSampleSize = round(pulseWidth*sampleRate) #number of samples in a pulse
-    pulseSepSampleSize = round(pulseSep*sampleRate) #number of samples separated pulses
-    for n in range(pulseN): #Making N pulses
-        pulseNStartInd = int(round(numSamples*pulseStart) + round(n*pulseSepSampleSize) - 1) #Start index of Nth pulse
-        pulseNEndInd = pulseNStartInd + pulseWidthSampleSize #End index of Nth pulse
-        for i in range(pulseNStartInd,pulseNEndInd): #Make pulse N
-            wfm_arr[i] = VmaxNorm
-    #pulse2StartInd = round(numSamples*pulseCenter - pulseWidthSampleSize/2 + pulseSepSampleSize/2 - 1) #Start index of second pulse
-    #pulse2EndInd = pulse2StartInd + pulseWidthSampleSize #End index of second pulse
-    #for i in range(pulse2StartInd,pulse2EndInd): #Make pulse two
-    #    wfm_arr[i] = VmaxNorm
-    return wfm_arr
-
 #Creates step function array. onStart corresponds to the start of the step from min to max.
 def createMarkerStepArray(repRate, onStart = midway, sampleRate=awg_sampleRate):
     numSamples = round(sampleRate/repRate)
@@ -92,16 +72,13 @@ def createMarkerZerosArray(repRate, sampleRate=awg_sampleRate):
     return marker_arr
 
 
-def createMarkerOnePulseArray(repRate, pulseWidth, pulseCenter = midway, sampleRate=awg_sampleRate, pulseStart=None):
+def createMarkerOnePulseArray(repRate, pulseWidth, pulseCenter = midway, sampleRate=awg_sampleRate):
     numSamples = round(sampleRate/repRate) #number of samples
     marker_arr = np.zeros(numSamples)
     pulseWidthSampleSize = round(pulseWidth*sampleRate) #number of samples in pulse
-    if pulseStart==None:
-        pulseStartInd = round(numSamples*pulseCenter-pulseWidthSampleSize/2 - 1) #Make start index so center of pulse is at pulseCenter
-    elif pulseStart!=None:
-        pulseStartInd = round(numSamples*pulseStart - 1) #Make start index so start of pulse is at pulseStart
+    pulseStartInd = round(numSamples*pulseCenter-pulseWidthSampleSize/2 - 1) #Make start index so center of pulse is at pulseCenter
     pulseEndInd = pulseStartInd + pulseWidthSampleSize #End index of pulse
-    for i in range(pulseStartInd,pulseEndInd+1): #Make pulse
+    for i in range(pulseStartInd,pulseEndInd+1): #Make pulse        
          marker_arr[i] = 1
     return marker_arr
 

@@ -5,7 +5,7 @@ AWG70k Simple Waveform Sender
 Creates waveforms + markers for Channel 1 (one pulse) and Channel 2 (one pulse),
 sends them to the AWG, and loads them onto the respective channels.
 
-Edited: 1/3/20
+Edited: 07/27/21
 Sam Davis
 
 Requirements: Python3, AWGFunc.py (in same directory), packages listed below
@@ -19,14 +19,16 @@ import AWGFunc
 import time
 from datetime import datetime
 
+mode = "static" #static or scan
+
 sampleRate = AWGFunc.awg_sampleRate
 Vmin = AWGFunc.awg_Vmin
 Vmax = AWGFunc.awg_Vmax
-repRate = 90*10**6 #Clock rate (Hz)
+repRate = 80*10**6 #Clock rate (Hz)
 clockCycle = 1/repRate
 wfmPulseWidth=40e-12 #in seconds
 markerPulseWidth = 600e-12
-adqtime=900 #seconds
+adqtime=1#900 #seconds
 
 #Bob Pos
 pulseCenterWfm_Ch1 = 0.5
@@ -36,10 +38,14 @@ pulseCenterMkr2_Ch1 = 0.7
 pulseCenterWfm_Ch2 = 0.74
 
 
-delayStep = 40*10**(-12) #s
+
+delayStep =100*10**(-12)# 40*10**(-12) #s
 scanRange = 1700 * 10**(-12)
 delayStepFrac = delayStep/clockCycle
-numSteps = round(scanRange/delayStep)
+if mode == "scan":
+    numSteps = round(scanRange/delayStep)
+else:
+    numSteps = 1
 
 
 
@@ -49,7 +55,7 @@ try:
 
     # Set up VISA instrument object
     rm = visa.ResourceManager('@py')
-    awg = rm.open_resource('TCPIP0::192.168.0.165::inst0::INSTR')
+    awg = rm.open_resource('TCPIP0::192.168.0.103::inst0::INSTR')
     print('Connected to ', awg.query('*idn?'))
 
 
@@ -102,17 +108,20 @@ try:
 
 
     # Check for errors
-    AWGFunc.checkErrors(awg)
+    #AWGFunc.checkErrors(awg)
 
     #Turn on outputs
-    awg.write('output1 on')
-    awg.write('output2 on')
-    awg.write('awgcontrol:run:immediate')
 
+
+    
+
+    print("")
+    print("wait 5 seconds")
     time.sleep(5)
-
-
-
+    if numSteps>0:
+        print("starting scan")
+    else:
+        print("sending pulse")
     for i in range(numSteps):
         print(pulseCenterWfm_Ch2)
         now = datetime.now()
@@ -124,9 +133,9 @@ try:
 
 
         # Create Marker Data for Channel 2
-        #marker1_arr_ch2 = AWGFunc.createMarkerOnePulseArray(repRate,markerPulseWidth) #Instead of one-sided step fxn, use pulse
-        #marker2_arr_ch2 = AWGFunc.createMarkerZerosArray(repRate)
-        #markerData_ch2=AWGFunc.createMarkerData(marker1_arr_ch2,marker2_arr_ch2)
+        marker1_arr_ch2 = AWGFunc.createMarkerOnePulseArray(repRate,markerPulseWidth) #Instead of one-sided step fxn, use pulse
+        marker2_arr_ch2 = AWGFunc.createMarkerZerosArray(repRate)
+        markerData_ch2=AWGFunc.createMarkerData(marker1_arr_ch2,marker2_arr_ch2)
 
         #Send Waveform + Markers to Channel 2
         AWGFunc.sendWaveform(awg, name_ch2, numSamples_ch2, wfm_arr_ch2)
@@ -135,13 +144,16 @@ try:
 
         #Load Waveform + Markers onto Channel 2
         AWGFunc.loadWaveform(awg, name_ch2, 2)
-
         awg.write('awgcontrol:run:immediate')
+        awg.write('output1 on')
+        awg.write('output2 on')
+        
 
 
         AWGFunc.checkErrors(awg)
         pulseCenterWfm_Ch2 = pulseCenterWfm_Ch2+delayStepFrac
         time.sleep(adqtime)
+   
 
     awg.close()
 except KeyboardInterrupt:

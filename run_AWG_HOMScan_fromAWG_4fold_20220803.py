@@ -143,7 +143,7 @@ try:
     #steps = [-16]
     #steps = [2,1,1,1,1,1]
     #steps = [sum([6,10,2,2,1])]
-    #steps = [sum([6,10,2,2,1,1,1])]
+    steps = [sum([6,10,2,2,1,1,1])]
 
     for j,i in enumerate(steps):
         print ("Step number: ",j+1)
