@@ -25,10 +25,20 @@ print('Connected to ', awg.query('*idn?'))
 
 # Create Waveform
 name       = 'sam1_wfm'
+name2       = 'sam2_wfm'
 repRate    = 10e6 #clock rate (Hz)
-pulseWidth = 3*40e-12 #in seconds
-pulseSep   = 2e-9 #in seconds
-wfm_arr=AWGFunc.createWaveformTwoPulseArray(repRate, pulseWidth, pulseSep) #Creates normalized voltage array of two pulses
+clockCycle = 1/repRate
+print(clockCycle)
+pulseN     = 20 #number of pulses
+pulseWidth = 1*40e-12 #in seconds
+pulseSep   = 5e-9 #in seconds
+separation = 2e-9/clockCycle
+pulseStart = 0.04 #fraction of sample in which pulse will start Starting point of pulses
+pulseStart_2 = 0.04-separation #fraction of sample in which pulse will start Starting point of pulses
+wfm_arr  = AWGFunc.createWaveformNPulseArray(repRate, pulseN, pulseWidth, pulseSep, pulseStart=pulseStart) #Creates normalized voltage array of two pulses
+wfm_arr_2= AWGFunc.createWaveformNPulseArray(repRate, pulseN, pulseWidth, pulseSep, pulseStart=pulseStart_2) #Creates normalized voltage array of two pulses
+wfm_arr = wfm_arr + wfm_arr_2
+#wfm_arr_2=AWGFunc.createWaveformNPulseArray(repRate, pulseN, pulseWidth, pulseSep, pulseStart=pulseStart_2) #Creates normalized voltage array of two pulses
 numSamples = len(wfm_arr)
 sample_arr = range(numSamples) #array of sample indices
 time_arr = []
@@ -36,8 +46,13 @@ for s in sample_arr:
     time_arr.append(s*10**9 / sampleRate)
 time_arr=np.array(time_arr)
 
+plt.plot(wfm_arr)
+plt.show()
+
 # Create Marker Data
-marker1_arr = AWGFunc.createMarkerStepArray(repRate)
+markerWidth = 10*40e-12 #in seconds
+markerStart = 0.99 #Starting point of marker
+marker1_arr = AWGFunc.createMarkerOnePulseArray(repRate, markerWidth, pulseStart=markerStart)
 marker2_arr = AWGFunc.createMarkerZerosArray(repRate)
 markerData  = AWGFunc.createMarkerData(marker1_arr,marker2_arr)
 
@@ -49,24 +64,25 @@ fig, axs = plt.subplots(3,1, num=1, sharex=True)
 axs[0].plot(time_arr, wfm_arr,".")
 axs[0].set_ylabel("Waveform (Norm. V)")
 axs[0].grid()
-#Marker 1
-axs[1].plot(time_arr, marker1_arr)
-axs[1].set_ylabel("Marker 1 (Bits)")
-axs[1].grid()
+##Marker 1
+#axs[1].plot(time_arr, marker1_arr)
+#axs[1].set_ylabel("Marker 1 (Bits)")
+#axs[1].grid()
 #Marker 2
-axs[2].plot(time_arr, marker2_arr)
-axs[2].set_ylabel("Marker 2 (Bits)")
-axs[2].grid()
-xlims=axs[2].get_xlim()
-xmin1=xlims[0]
-xmax1=xlims[1]
-fig.suptitle("Waveform and Markers for One Clock Cycle")
-plt.xlabel('Time (ns)', fontsize =16)
-#plt.show()
+#axs[2].plot(time_arr, marker2_arr)
+#axs[2].set_ylabel("Marker 2 (Bits)")
+#axs[2].grid()
+#xlims=axs[2].get_xlim()
+#xmin1=xlims[0]
+#xmax1=xlims[1]
+#fig.suptitle("Waveform and Markers for One Clock Cycle")
+#plt.xlabel('Time (ns)', fontsize =16)
+#\plt.show()
 
 
 # Send Waveform Data
 AWGFunc.sendWaveform(awg, name, numSamples, wfm_arr)
+AWGFunc.sendWaveform(awg, name2, numSamples, wfm_arr)
 #Send Marker data
 AWGFunc.sendMarkerData(awg, name, numSamples, markerData)
 
@@ -74,9 +90,12 @@ AWGFunc.sendMarkerData(awg, name, numSamples, markerData)
 channelNum = 1
 AWGFunc.loadWaveform(awg, name, channelNum)
 
+#AWGFunc.sendWaveform(awg, name, numSamples, wfm_arr_2)
+AWGFunc.loadWaveform(awg, name2, 2)
+
 #IMPORTANT: If not sending anything to a channel, need to write the corresponding output off.
 awg.write('output1 on')
-awg.write('output2 off')
+awg.write('output2 on')
 awg.write('awgcontrol:run:immediate') #Start run
 
 # Check for errors

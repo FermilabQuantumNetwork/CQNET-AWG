@@ -25,7 +25,7 @@ markerPulseWidth = 400e-12
 
 # Set up VISA instrument object
 rm = visa.ResourceManager('@py')
-awg = rm.open_resource('TCPIP0::192.168.0.165::inst0::INSTR')
+awg = rm.open_resource('TCPIP0::192.168.2.3::inst0::INSTR')
 print('Connected to ', awg.query('*idn?'))
 
 
